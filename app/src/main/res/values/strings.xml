@@ -8,4 +8,6 @@
     <string name="humidity">Humidity</string>
     <string name="uv">UV</string>
     <string name="feels_like">Feels Like</string>
+
+    <string name="api_key_env_name">WEATHER_APP_API_KEY</string>
 </resources>

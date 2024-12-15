@@ -73,7 +73,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-//e216de862bb64f3c8ef70240241512
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchCity() {
