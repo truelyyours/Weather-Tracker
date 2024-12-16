@@ -25,8 +25,11 @@ import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,6 +42,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.network.RetrofitClient
+import com.example.network.data.WeatherInfo
 import com.example.weathertracker.ui.theme.BackgroundGray
 import com.example.weathertracker.ui.theme.CustomBlack
 import com.example.weathertracker.ui.theme.LightGray
@@ -50,12 +55,27 @@ import com.example.weathertracker.ui.theme.WeatherTrackerTheme
 lateinit var appCtx: Context
 
 class MainActivity : ComponentActivity() {
+
+//    Init Retrofit Client
+    init {
+        RetrofitClient.createInstance(WeatherApp.getNonUiAppContext().getString(R.string.base_url))
+    }
+
+    private val apiClient = RetrofitClient.getApiClient()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         appCtx = applicationContext
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             WeatherTrackerTheme {
+                var weatherInfo by remember {
+                    mutableStateOf<WeatherInfo?> (null)
+                }
+
+                LaunchedEffect(Unit) {
+                    weatherInfo = apiClient.getCurrentWeather(Utils.getWeatherAppApiKey(), "State College")
+                }
 
 //                val viewModel = DataViewModel()
 
@@ -66,6 +86,8 @@ class MainActivity : ComponentActivity() {
                         SearchCity()
                         Spacer(Modifier.height(240.dp))
                         NoCitySelected()
+                        Spacer(Modifier.height(40.dp))
+                        weatherInfo?.location?.let { Text(text = it.name, fontFamily = PoppinsFontFamily, fontSize = 25.sp) }
                     }
                 }
             }

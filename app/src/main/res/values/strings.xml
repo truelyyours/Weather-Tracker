@@ -10,4 +10,5 @@
     <string name="feels_like">Feels Like</string>
 
     <string name="api_key_env_name">WEATHER_APP_API_KEY</string>
+    <string name="base_url">https://api.weatherapi.com/</string>
 </resources>

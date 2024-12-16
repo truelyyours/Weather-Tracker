@@ -10,6 +10,7 @@ android {
     namespace = "com.example.weathertracker"
     compileSdk = 35
 
+    android.buildFeatures.buildConfig = true
     defaultConfig {
         applicationId = "com.example.weathertracker"
         minSdk = 24
@@ -18,6 +19,9 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        val apiKey: String = System.getenv("WEATHER_APP_API_KEY") ?: ""
+        buildConfigField("String", "WEATHER_APP_API_KEY", "\"$apiKey\"")
     }
 
     buildTypes {
@@ -43,6 +47,8 @@ android {
 
 dependencies {
 
+    implementation(project(":network"))
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -59,9 +65,6 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-//    API nad network calls
-    implementation(libs.retrofit)
-    implementation(libs.converter.gson)
 //    Image loading
     implementation(libs.compose)
 
