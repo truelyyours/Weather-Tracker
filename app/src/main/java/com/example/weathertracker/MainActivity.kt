@@ -74,14 +74,14 @@ class MainActivity : ComponentActivity() {
 //                val viewModel = DataViewModel()
 
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Column(modifier = Modifier.padding(innerPadding),
+                    Column(modifier = Modifier.padding(innerPadding).fillMaxSize(),
                         horizontalAlignment = Alignment.CenterHorizontally) {
                         Spacer(Modifier.height(44.dp))
                         SearchCity()
 //                        Spacer(Modifier.height(240.dp))
 //                        NoCitySelected()
                         Spacer(Modifier.height(80.dp))
-                        LocationWeatherDetails(apiClient)
+                        LocationWeatherDetails()
                     }
                 }
             }

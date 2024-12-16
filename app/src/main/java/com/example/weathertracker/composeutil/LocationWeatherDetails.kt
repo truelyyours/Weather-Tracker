@@ -1,6 +1,7 @@
 package com.example.weathertracker.composeutil
 
 import android.graphics.drawable.Icon
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -45,35 +46,60 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideSubcomposition
 import com.bumptech.glide.integration.compose.RequestState
 import com.example.network.ApiService
+import com.example.network.RetrofitClient
 import com.example.network.data.WeatherInfo
 import com.example.weathertracker.R
 import com.example.weathertracker.Utils
-import com.example.weathertracker.WeatherApp
 import com.example.weathertracker.ui.theme.BackgroundGray
 import com.example.weathertracker.ui.theme.CustomBlack
 import com.example.weathertracker.ui.theme.CustomGray
 import com.example.weathertracker.ui.theme.LightGray
 import com.example.weathertracker.ui.theme.PoppinsFontFamily
+import kotlinx.coroutines.Dispatchers
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun LocationWeatherDetails(apiService: ApiService) {
+fun LocationWeatherDetails() {
 
     var weatherInfo by remember {
         mutableStateOf<WeatherInfo?> (null)
     }
-
-    LaunchedEffect(Unit) {
-        weatherInfo = apiService.getCurrentWeather(Utils.getWeatherAppApiKey(), "State College")
+    var networkError by remember {
+        mutableStateOf(false)
+    }
+    var locationError by remember {
+        mutableStateOf(false)
     }
 
-    if (weatherInfo == null) {
-        CircularProgressIndicator(modifier = Modifier.size(100.dp), color = Color.Cyan)
+    LaunchedEffect(Unit) {
+        RetrofitClient.getCurrentWeather(Dispatchers.IO, Utils.getWeatherAppApiKey(), "S").onSuccess {
+            weatherInfo = it
+        }.onGenericError{code, error ->
+//            This means location not found.
+            networkError = false
+            locationError = true
+            Log.e("LocationWeatherDetails::", "Generic Error $code && $error")
+        }.onFailure {
+//            TODO: Show empty. DO nothing This mean NO INTERNET
+            networkError = true
+            locationError = false
+            Log.e("LocationWeatherDetails:: ", it.message.toString())
+        }
+    }
+
+    if (networkError) {
+        Text(text = "No Internet Connection!", minLines = 4, fontFamily = PoppinsFontFamily, style = TextStyle(fontSize = 40.sp), color = CustomBlack, textAlign = TextAlign.Center)
+    } else if (locationError) {
+        Text(text = "No location found with given name!", minLines = 4, fontFamily = PoppinsFontFamily, style = TextStyle(fontSize = 40.sp), color = CustomBlack, textAlign = TextAlign.Center)
+    } else if (weatherInfo == null) {
+        CircularProgressIndicator(modifier = Modifier.size(100.dp), color = CustomGray)
     } else {
         //    The figma designs are not centre aligned but just "looks" center aligned.
         //    I am center aligning as its easier and convenient.
+        networkError = false
+        locationError = false
         Column(modifier = Modifier,
-            horizontalAlignment = Alignment.CenterHorizontally){
+            horizontalAlignment = Alignment.CenterHorizontally) {
 
             val imageUrl = weatherInfo!!.current.condition.icon.replace("64x64", "128x128")
             GlideSubcomposition(modifier = Modifier.size(123.dp),
@@ -109,7 +135,6 @@ fun LocationWeatherDetails(apiService: ApiService) {
                 ExtraInfoColumn("UV", weatherInfo!!.current.uv.toString() + "%")
                 ExtraInfoColumn("Feels Like", weatherInfo!!.current.feelslike_c.toString() + "\u02DA")
             }
-
         }
     }
 }
