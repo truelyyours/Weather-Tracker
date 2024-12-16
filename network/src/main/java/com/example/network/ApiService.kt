@@ -10,4 +10,10 @@ interface ApiService {
     suspend fun getCurrentWeather(
         @Query("key") key: String,
         @Query("q") q: String): WeatherInfo
+
+//    @GET("/v1/search.json")
+//    suspend fun getAutoCompleteResults(
+//        @Query("key") key: String,
+//        @Query("q") q:String
+//    ):
 }

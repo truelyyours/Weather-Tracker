@@ -79,7 +79,7 @@ class MainActivity : ComponentActivity() {
 //                        Spacer(Modifier.height(240.dp))
 //                        NoCitySelected()
                         Spacer(Modifier.height(80.dp))
-                        LocationWeatherDetails(retrofitClient)
+                        LocationWeatherDetails("Surat")
                     }
                 }
             }

@@ -21,6 +21,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,6 +44,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.ViewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideSubcomposition
 import com.bumptech.glide.integration.compose.RequestState
@@ -56,88 +59,72 @@ import com.example.weathertracker.ui.theme.CustomBlack
 import com.example.weathertracker.ui.theme.CustomGray
 import com.example.weathertracker.ui.theme.LightGray
 import com.example.weathertracker.ui.theme.PoppinsFontFamily
+import com.example.weathertracker.viewmodel.WeatherInfoLoadingState
+import com.example.weathertracker.viewmodel.WeatherInfoViewModel
 import kotlinx.coroutines.Dispatchers
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun LocationWeatherDetails(retrofitClient: RetrofitClient) {
-
-    var weatherInfo by remember {
-        mutableStateOf<WeatherInfo?> (null)
-    }
-    var networkError by remember {
-        mutableStateOf(false)
-    }
-    var locationError by remember {
-        mutableStateOf(false)
-    }
+fun LocationWeatherDetails(
+    location: String,
+    viewModel: WeatherInfoViewModel = hiltViewModel()
+) {
 
     LaunchedEffect(Unit) {
-        retrofitClient.getCurrentWeather(Dispatchers.IO, Utils.getWeatherAppApiKey(), "Surat").onSuccess {
-            weatherInfo = it
-        }.onGenericError{code, error ->
-//            This means location not found.
-            networkError = false
-            locationError = true
-            Log.e("LocationWeatherDetails::", "Generic Error $code && $error")
-        }.onFailure {
-//            This mean NO INTERNET
-            networkError = true
-            locationError = false
-            Log.e("LocationWeatherDetails:: ", it.message.toString())
-        }
+        viewModel.getWeather(location)
     }
 
-    if (networkError) {
-        Text(text = "No Internet Connection!", minLines = 4, fontFamily = PoppinsFontFamily, style = TextStyle(fontSize = 40.sp), color = CustomBlack, textAlign = TextAlign.Center)
-    } else if (locationError) {
-        Text(text = "No location found with given name!", minLines = 4, fontFamily = PoppinsFontFamily, style = TextStyle(fontSize = 40.sp), color = CustomBlack, textAlign = TextAlign.Center)
-    } else if (weatherInfo == null) {
-        CircularProgressIndicator(modifier = Modifier.size(100.dp), color = CustomGray)
-    } else {
-        //    The figma designs are not centre aligned but just "looks" center aligned.
-        //    I am center aligning as its easier and convenient.
-        networkError = false
-        locationError = false
+    val stateFlow by viewModel.stateFlow.collectAsState() // Current State
+
         Column(modifier = Modifier,
             horizontalAlignment = Alignment.CenterHorizontally) {
 
-            val imageUrl = weatherInfo!!.current.condition.icon.replace("64x64", "128x128")
-            GlideSubcomposition(modifier = Modifier.size(123.dp),
-                model = "https:$imageUrl"
-            ) {
-                when (state) {
-                    RequestState.Loading -> CircularProgressIndicator(
-                        modifier = Modifier.size(60.dp), color = Color.Cyan
-                    )
-                    RequestState.Failure -> Icon(Icons.Default.Warning,
-                        tint = Color.Red, contentDescription = null)
-                    is RequestState.Success -> Image(painter = painter,
-                        modifier = Modifier.size(123.dp),
-                        contentDescription = "Weather Icon Image")
+            when (val tempState = stateFlow) {
+                is WeatherInfoLoadingState.Error -> {
+                    Text(text = tempState.message, minLines = 4, fontFamily = PoppinsFontFamily, style = TextStyle(fontSize = 40.sp), color = CustomBlack, textAlign = TextAlign.Center)
+                }
+                WeatherInfoLoadingState.Loading -> {
+                    CircularProgressIndicator(modifier = Modifier.size(100.dp), color = CustomGray)
+                }
+                is WeatherInfoLoadingState.Success -> {
+                    val imageUrl = tempState.weatherInfo.current.condition.icon.replace("64x64", "128x128")
+                    GlideSubcomposition(modifier = Modifier.size(123.dp),
+                        model = "https:$imageUrl"
+                    ) {
+                        when (state) {
+                            RequestState.Loading -> CircularProgressIndicator(
+                                modifier = Modifier.size(60.dp), color = Color.Cyan
+                            )
+                            RequestState.Failure -> Icon(Icons.Default.Warning,
+                                tint = Color.Red, contentDescription = null)
+                            is RequestState.Success -> Image(painter = painter,
+                                modifier = Modifier.size(123.dp),
+                                contentDescription = "Weather Icon Image")
+                        }
+                    }
+
+                    Spacer(Modifier.height(24.dp))
+
+                    LocationText(tempState.weatherInfo.location.name + " ")
+                    Spacer(Modifier.height(24.dp))
+
+                    Text(text = tempState.weatherInfo.current.temp_c.toString() + "\u02DA", fontFamily = PoppinsFontFamily, fontSize = 70.sp, fontWeight = FontWeight.Medium, color = CustomBlack,
+                        textAlign = TextAlign.Center)
+
+                    Spacer(Modifier.height(36.dp))
+
+                    Row (verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceAround,
+                        modifier = Modifier.height(75.dp).width(274.dp)
+                            .clip(RoundedCornerShape(16.dp)).background(BackgroundGray)) {
+                        ExtraInfoColumn("Humidity", tempState.weatherInfo.current.humidity.toString() + "%")
+                        ExtraInfoColumn("UV", tempState.weatherInfo.current.uv.toString() + "%")
+                        ExtraInfoColumn("Feels Like", tempState.weatherInfo.current.feelslike_c.toString() + "\u02DA")
+                    }
                 }
             }
-
-            Spacer(Modifier.height(24.dp))
-
-            LocationText(weatherInfo!!.location.name + " ")
-            Spacer(Modifier.height(24.dp))
-
-            Text(text = weatherInfo!!.current.temp_c.toString() + "\u02DA", fontFamily = PoppinsFontFamily, fontSize = 70.sp, fontWeight = FontWeight.Medium, color = CustomBlack,
-                textAlign = TextAlign.Center)
-
-            Spacer(Modifier.height(36.dp))
-
-            Row (verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceAround,
-                modifier = Modifier.height(75.dp).width(274.dp)
-                    .clip(RoundedCornerShape(16.dp)).background(BackgroundGray)) {
-                ExtraInfoColumn("Humidity", weatherInfo!!.current.humidity.toString() + "%")
-                ExtraInfoColumn("UV", weatherInfo!!.current.uv.toString() + "%")
-                ExtraInfoColumn("Feels Like", weatherInfo!!.current.feelslike_c.toString() + "\u02DA")
-            }
         }
-    }
+//    }
 }
 
 @Composable
