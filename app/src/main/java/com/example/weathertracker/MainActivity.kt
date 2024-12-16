@@ -76,10 +76,13 @@ class MainActivity : ComponentActivity() {
                         horizontalAlignment = Alignment.CenterHorizontally) {
                         Spacer(Modifier.height(44.dp))
                         SearchCity()
-//                        Spacer(Modifier.height(240.dp))
-//                        NoCitySelected()
-                        Spacer(Modifier.height(80.dp))
-                        LocationWeatherDetails("Surat")
+                        if (WeatherApp.getStoredCityName().isEmpty()) {
+                            Spacer(Modifier.height(240.dp))
+                            NoCitySelected()
+                        } else {
+                            Spacer(Modifier.height(80.dp))
+                            LocationWeatherDetails("Surat")
+                        }
                     }
                 }
             }

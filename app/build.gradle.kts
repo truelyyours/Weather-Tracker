@@ -73,6 +73,9 @@ dependencies {
     kapt(libs.hilt.android.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.hilt.navigation.fragment)
+
+    // DataStore
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
 }
 
 kapt {

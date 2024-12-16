@@ -76,55 +76,54 @@ fun LocationWeatherDetails(
 
     val stateFlow by viewModel.stateFlow.collectAsState() // Current State
 
-        Column(modifier = Modifier,
-            horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(modifier = Modifier,
+        horizontalAlignment = Alignment.CenterHorizontally) {
 
-            when (val tempState = stateFlow) {
-                is WeatherInfoLoadingState.Error -> {
-                    Text(text = tempState.message, minLines = 4, fontFamily = PoppinsFontFamily, style = TextStyle(fontSize = 40.sp), color = CustomBlack, textAlign = TextAlign.Center)
-                }
-                WeatherInfoLoadingState.Loading -> {
-                    CircularProgressIndicator(modifier = Modifier.size(100.dp), color = CustomGray)
-                }
-                is WeatherInfoLoadingState.Success -> {
-                    val imageUrl = tempState.weatherInfo.current.condition.icon.replace("64x64", "128x128")
-                    GlideSubcomposition(modifier = Modifier.size(123.dp),
-                        model = "https:$imageUrl"
-                    ) {
-                        when (state) {
-                            RequestState.Loading -> CircularProgressIndicator(
-                                modifier = Modifier.size(60.dp), color = Color.Cyan
-                            )
-                            RequestState.Failure -> Icon(Icons.Default.Warning,
-                                tint = Color.Red, contentDescription = null)
-                            is RequestState.Success -> Image(painter = painter,
-                                modifier = Modifier.size(123.dp),
-                                contentDescription = "Weather Icon Image")
-                        }
+        when (val tempState = stateFlow) {
+            is WeatherInfoLoadingState.Error -> {
+                Text(text = tempState.message, minLines = 4, fontFamily = PoppinsFontFamily, style = TextStyle(fontSize = 40.sp), color = CustomBlack, textAlign = TextAlign.Center)
+            }
+            WeatherInfoLoadingState.Loading -> {
+                CircularProgressIndicator(modifier = Modifier.size(100.dp), color = CustomGray)
+            }
+            is WeatherInfoLoadingState.Success -> {
+                val imageUrl = tempState.weatherInfo.current.condition.icon.replace("64x64", "128x128")
+                GlideSubcomposition(modifier = Modifier.size(123.dp),
+                    model = "https:$imageUrl"
+                ) {
+                    when (state) {
+                        RequestState.Loading -> CircularProgressIndicator(
+                            modifier = Modifier.size(60.dp), color = Color.Cyan
+                        )
+                        RequestState.Failure -> Icon(Icons.Default.Warning,
+                            tint = Color.Red, contentDescription = null)
+                        is RequestState.Success -> Image(painter = painter,
+                            modifier = Modifier.size(123.dp),
+                            contentDescription = "Weather Icon Image")
                     }
+                }
 
-                    Spacer(Modifier.height(24.dp))
+                Spacer(Modifier.height(24.dp))
 
-                    LocationText(tempState.weatherInfo.location.name + " ")
-                    Spacer(Modifier.height(24.dp))
+                LocationText(tempState.weatherInfo.location.name + " ")
+                Spacer(Modifier.height(24.dp))
 
-                    Text(text = tempState.weatherInfo.current.temp_c.toString() + "\u02DA", fontFamily = PoppinsFontFamily, fontSize = 70.sp, fontWeight = FontWeight.Medium, color = CustomBlack,
-                        textAlign = TextAlign.Center)
+                Text(text = tempState.weatherInfo.current.temp_c.toString() + "\u02DA", fontFamily = PoppinsFontFamily, fontSize = 70.sp, fontWeight = FontWeight.Medium, color = CustomBlack,
+                    textAlign = TextAlign.Center)
 
-                    Spacer(Modifier.height(36.dp))
+                Spacer(Modifier.height(36.dp))
 
-                    Row (verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceAround,
-                        modifier = Modifier.height(75.dp).width(274.dp)
-                            .clip(RoundedCornerShape(16.dp)).background(BackgroundGray)) {
-                        ExtraInfoColumn("Humidity", tempState.weatherInfo.current.humidity.toString() + "%")
-                        ExtraInfoColumn("UV", tempState.weatherInfo.current.uv.toString() + "%")
-                        ExtraInfoColumn("Feels Like", tempState.weatherInfo.current.feelslike_c.toString() + "\u02DA")
-                    }
+                Row (verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceAround,
+                    modifier = Modifier.height(75.dp).width(274.dp)
+                        .clip(RoundedCornerShape(16.dp)).background(BackgroundGray)) {
+                    ExtraInfoColumn("Humidity", tempState.weatherInfo.current.humidity.toString() + "%")
+                    ExtraInfoColumn("UV", tempState.weatherInfo.current.uv.toString() + "%")
+                    ExtraInfoColumn("Feels Like", tempState.weatherInfo.current.feelslike_c.toString() + "\u02DA")
                 }
             }
         }
-//    }
+    }
 }
 
 @Composable
