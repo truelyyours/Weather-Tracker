@@ -44,6 +44,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.network.RetrofitClient
 import com.example.network.data.WeatherInfo
+import com.example.weathertracker.composeutil.LocationWeatherDetails
+import com.example.weathertracker.composeutil.NoCitySelected
+import com.example.weathertracker.composeutil.SearchCity
 import com.example.weathertracker.ui.theme.BackgroundGray
 import com.example.weathertracker.ui.theme.CustomBlack
 import com.example.weathertracker.ui.theme.LightGray
@@ -52,7 +55,6 @@ import com.example.weathertracker.ui.theme.WeatherTrackerTheme
 
 
 
-lateinit var appCtx: Context
 
 class MainActivity : ComponentActivity() {
 
@@ -64,18 +66,10 @@ class MainActivity : ComponentActivity() {
     private val apiClient = RetrofitClient.getApiClient()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        appCtx = applicationContext
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             WeatherTrackerTheme {
-                var weatherInfo by remember {
-                    mutableStateOf<WeatherInfo?> (null)
-                }
-
-                LaunchedEffect(Unit) {
-                    weatherInfo = apiClient.getCurrentWeather(Utils.getWeatherAppApiKey(), "State College")
-                }
 
 //                val viewModel = DataViewModel()
 
@@ -84,75 +78,14 @@ class MainActivity : ComponentActivity() {
                         horizontalAlignment = Alignment.CenterHorizontally) {
                         Spacer(Modifier.height(44.dp))
                         SearchCity()
-                        Spacer(Modifier.height(240.dp))
-                        NoCitySelected()
-                        Spacer(Modifier.height(40.dp))
-                        weatherInfo?.location?.let { Text(text = it.name, fontFamily = PoppinsFontFamily, fontSize = 25.sp) }
+//                        Spacer(Modifier.height(240.dp))
+//                        NoCitySelected()
+                        Spacer(Modifier.height(80.dp))
+                        LocationWeatherDetails(apiClient)
                     }
                 }
             }
         }
-    }
-}
-
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun SearchCity() {
-
-    val searchQuery = remember { mutableStateOf("") }
-    val isSearching = remember { mutableStateOf(false) }
-    SearchBar(modifier = Modifier.padding(horizontal = 24.dp).clip(RoundedCornerShape(16.dp)),
-        inputField = {
-            SearchBarDefaults.InputField(
-//                modifier = Modifier.height(46.dp),
-                query = searchQuery.value,
-                onSearch = ::tempOnTextChange,
-                onQueryChange = ::tempOnTextChange,
-                expanded = isSearching.value,
-                onExpandedChange = { isSearching.value = !isSearching.value },
-                placeholder = { Text("Search Location", fontFamily = PoppinsFontFamily,
-                    fontSize = 15.sp, color = LightGray, fontWeight = FontWeight.W400, lineHeight = 22.5.sp)},
-                trailingIcon = { Icon(Icons.Default.Search, contentDescription = null,
-                    tint = LightGray) },
-            )
-        },
-        shape = RoundedCornerShape(corner = CornerSize(16.dp)),
-        expanded = isSearching.value,
-        onExpandedChange = {isSearching.value = !isSearching.value}) {
-
-    }
-}
-
-@Composable
-fun NoCitySelected() {
-    Column(modifier = Modifier.padding(horizontal = 48.dp),
-        horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(text = appCtx.getString(R.string.no_city_selected),
-            fontFamily = PoppinsFontFamily, fontWeight = FontWeight.SemiBold,
-            fontSize = 30.sp, lineHeight = 45.sp, textAlign = TextAlign.Center,
-            maxLines = 1, color = CustomBlack, modifier = Modifier.height(50.dp)
-       )
-        Text(text = appCtx.getString(R.string.please_search_city),
-            fontFamily = PoppinsFontFamily, fontWeight = FontWeight.SemiBold,
-            fontSize = 15.sp, lineHeight = 22.5.sp, textAlign = TextAlign.Center,
-            maxLines = 1, color = CustomBlack
-        )
-    }
-}
-
-@Composable
-fun LocationDetails() {
-//    The figma designs are not centre aligned but just "looks" center aligned.
-//    I am center aligning as its easier and convenient.
-    Column(modifier = Modifier,
-        horizontalAlignment = Alignment.CenterHorizontally){
-
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-
-
-        }
-
     }
 }
 
