@@ -81,14 +81,14 @@ fun LocationWeatherDetails(
 
         when (val tempState = stateFlow) {
             is WeatherInfoLoadingState.Error -> {
-                Text(text = tempState.message, minLines = 4, fontFamily = PoppinsFontFamily, style = TextStyle(fontSize = 40.sp), color = CustomBlack, textAlign = TextAlign.Center)
+                Text(text = tempState.message, fontFamily = PoppinsFontFamily, style = TextStyle(fontSize = 40.sp), color = CustomBlack, textAlign = TextAlign.Center)
             }
             WeatherInfoLoadingState.Loading -> {
                 CircularProgressIndicator(modifier = Modifier.size(100.dp), color = CustomGray)
             }
             is WeatherInfoLoadingState.Success -> {
                 val imageUrl = tempState.weatherInfo.current.condition.icon.replace("64x64", "128x128")
-                GlideSubcomposition(modifier = Modifier.size(123.dp),
+                GlideSubcomposition(modifier = Modifier.size(128.dp),
                     model = "https:$imageUrl"
                 ) {
                     when (state) {
@@ -98,7 +98,7 @@ fun LocationWeatherDetails(
                         RequestState.Failure -> Icon(Icons.Default.Warning,
                             tint = Color.Red, contentDescription = null)
                         is RequestState.Success -> Image(painter = painter,
-                            modifier = Modifier.size(123.dp),
+                            modifier = Modifier.size(128.dp),
                             contentDescription = "Weather Icon Image")
                     }
                 }

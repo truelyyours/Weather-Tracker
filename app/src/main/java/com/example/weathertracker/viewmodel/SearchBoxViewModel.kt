@@ -2,11 +2,15 @@ package com.example.weathertracker.viewmodel
 
 import android.util.Log
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.clearText
+import androidx.compose.foundation.text.input.delete
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.network.data.WeatherInfo
+import com.example.weathertracker.R
+import com.example.weathertracker.WeatherApp
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -49,7 +53,7 @@ class SearchBoxViewModel @Inject constructor(
     @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
     private val searchTextState: StateFlow<SearchState> = snapshotFlow { searchTextFieldState.text }
         .debounce(1200) // call below things if the user does not type for 1.2s
-        .mapLatest { if (it.isBlank()) SearchState.Empty else SearchState.UserQuery(it.toString()) }
+        .mapLatest { if (it.isBlank() || it.length < 3) SearchState.Empty else SearchState.UserQuery(it.toString()) }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 3000),
@@ -65,6 +69,11 @@ class SearchBoxViewModel @Inject constructor(
                 is SearchState.UserQuery -> searchWeatherInfo(searchState.query)
             }
         }
+    }
+
+    fun exitSearch() {
+        _uiState.update { ScreenState.Empty }
+        searchTextFieldState.clearText()
     }
 
     // Doing it this way so that in case the sear API is used it is easier to implement/extend
