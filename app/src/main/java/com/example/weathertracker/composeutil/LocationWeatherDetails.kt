@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.InlineTextContent
+import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.CircularProgressIndicator
@@ -25,19 +27,28 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.Placeholder
+import androidx.compose.ui.text.PlaceholderVerticalAlign
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.GlideSubcomposition
-import com.bumptech.glide.integration.compose.Placeholder
 import com.bumptech.glide.integration.compose.RequestState
-import com.bumptech.glide.integration.compose.placeholder
 import com.example.network.ApiService
 import com.example.network.data.WeatherInfo
+import com.example.weathertracker.R
 import com.example.weathertracker.Utils
+import com.example.weathertracker.WeatherApp
 import com.example.weathertracker.ui.theme.BackgroundGray
 import com.example.weathertracker.ui.theme.CustomBlack
 import com.example.weathertracker.ui.theme.CustomGray
@@ -82,11 +93,11 @@ fun LocationWeatherDetails(apiService: ApiService) {
 
             Spacer(Modifier.height(24.dp))
 
-            Text(text = weatherInfo!!.location.name, fontFamily = PoppinsFontFamily, fontSize = 30.sp, fontWeight = FontWeight.SemiBold, color = CustomBlack)
-
+            LocationText(weatherInfo!!.location.name + " ")
             Spacer(Modifier.height(24.dp))
 
-            Text(text = weatherInfo!!.current.temp_c.toString() + "\u00B0", fontFamily = PoppinsFontFamily, fontSize = 70.sp, fontWeight = FontWeight.Medium, color = CustomBlack)
+            Text(text = weatherInfo!!.current.temp_c.toString() + "\u02DA", fontFamily = PoppinsFontFamily, fontSize = 70.sp, fontWeight = FontWeight.Medium, color = CustomBlack,
+                textAlign = TextAlign.Center)
 
             Spacer(Modifier.height(36.dp))
 
@@ -96,12 +107,44 @@ fun LocationWeatherDetails(apiService: ApiService) {
                     .clip(RoundedCornerShape(16.dp)).background(BackgroundGray)) {
                 ExtraInfoColumn("Humidity", weatherInfo!!.current.humidity.toString() + "%")
                 ExtraInfoColumn("UV", weatherInfo!!.current.uv.toString() + "%")
-                ExtraInfoColumn("Feels Like", weatherInfo!!.current.feelslike_c.toString() + "°")
+                ExtraInfoColumn("Feels Like", weatherInfo!!.current.feelslike_c.toString() + "\u02DA")
             }
 
         }
     }
 }
+
+@Composable
+fun LocationText(name: String) {
+    val id = "navIcon"
+    val textt = buildAnnotatedString {
+        append(name)
+        appendInlineContent(id, "[nav_icon]")
+    }
+    val inlineContent = mapOf(
+        Pair(
+            id,
+            InlineTextContent(
+                Placeholder(
+                    width = 21.sp,
+                    height = 21.sp,
+                    placeholderVerticalAlign = PlaceholderVerticalAlign.Center
+                )
+            ) {
+
+                Icon(painterResource(R.drawable.baseline_navigation_24),
+                    contentDescription = null,
+                    modifier = Modifier.rotate(45.0f))
+            }
+        )
+    )
+
+    Text(text = textt, inlineContent = inlineContent,
+        fontFamily = PoppinsFontFamily, fontSize = 30.sp, fontWeight = FontWeight.SemiBold, color = CustomBlack)
+
+}
+
+
 
 @Composable
 fun ExtraInfoColumn(title: String, info: String) {

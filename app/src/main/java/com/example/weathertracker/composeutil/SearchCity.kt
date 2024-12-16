@@ -32,7 +32,6 @@ fun SearchCity() {
     SearchBar(modifier = Modifier.padding(horizontal = 24.dp).clip(RoundedCornerShape(16.dp)),
         inputField = {
             SearchBarDefaults.InputField(
-//                modifier = Modifier.height(46.dp),
                 query = searchQuery.value,
                 onSearch = ::tempOnTextChange,
                 onQueryChange = ::tempOnTextChange,
