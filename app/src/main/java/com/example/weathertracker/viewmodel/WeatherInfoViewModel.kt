@@ -43,14 +43,14 @@ class WeatherInfoViewModel @Inject constructor(
             Log.e("LocationWeatherDetails::", "Generic Error $code && $errorMessage")
             _internalState.update {
                 return@update WeatherInfoLoadingState.Error(
-                    message = errorMessage + code.toString()
+                    message = errorMessage ?: "Unknown Error"
                 )
             }
         }.onFailure { exception ->
             Log.e("LocationWeatherDetails:: ", exception.message.toString())
             _internalState.update {
                 return@update WeatherInfoLoadingState.Error(
-                    message = exception.message ?: "Unknown error"
+                    message = "No Network Connection"
                 )
             }
         }

@@ -4,10 +4,10 @@ import android.util.Log
 import com.example.network.data.WeatherInfo
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
-import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import okio.IOException
+import org.json.JSONObject
 import retrofit2.HttpException
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -63,8 +63,9 @@ class RetrofitClient {
                     is IOException -> GracefulApiCall.Failure(error = e)
                     is HttpException -> {
                         val code = e.code()
-                        val errorResponse = "TODO"
-                        convertErrorBody(e)
+                        val errorResponse = parseErrorBody(e)
+
+                        Log.i("Retrofit Client::", "" + errorResponse)
                         GracefulApiCall.GenericError(code, errorResponse)
                     }
                     else -> {
@@ -77,9 +78,17 @@ class RetrofitClient {
     }
 }
 
-private fun convertErrorBody(exp: HttpException) {
-    exp.response()?.errorBody()?.source()?.let {
-        Log.i("Retrofit Client:: ", it.toString())
+private fun parseErrorBody(exp: HttpException): String {
+    try {
+        val errorJson = exp.response()?.errorBody()?.string()?.trim()
+            ?.let { JSONObject(it) }
+
+        val message = errorJson?.getJSONObject("error")?.getString("message") ?: "Error Related to API key."
+        val code = errorJson?.getJSONObject("error")?.getString("code") ?: "N/A"
+
+        return "Error Code: $code - $message"
+    } catch (e: Exception) {
+        return ""
     }
 }
 
