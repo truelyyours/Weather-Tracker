@@ -2,7 +2,6 @@ package com.example.weathertracker
 
 import android.app.Application
 import android.content.Context
-import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
@@ -25,17 +24,17 @@ class WeatherApp: Application() {
 
         fun getStoredCityName():String {
              var city = ""
-            val key_name = stringPreferencesKey("city_name")
+            val keyName = stringPreferencesKey("city_name")
             getNonUiAppContext().dataStore.data.map { pref ->
-                city = pref[key_name] ?: ""
+                city = pref[keyName] ?: ""
             }
             return "Surat"//city
         }
 
         suspend fun storeCityName(location: String) {
             getNonUiAppContext().dataStore.edit { pref ->
-                val key_name = stringPreferencesKey("city_name")
-                pref[key_name] = location
+                val keyName = stringPreferencesKey("city_name")
+                pref[keyName] = location
             }
         }
     }

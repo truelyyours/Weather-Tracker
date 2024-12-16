@@ -2,9 +2,12 @@ package com.example.weathertracker.composeutil
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -32,24 +35,25 @@ import com.example.weathertracker.ui.theme.PoppinsFontFamily
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun SearchResultCard(cityName: String, temp: String, imageUrl: String) {
+fun SearchResultCard(cityName: String, temp: String,
+                     imageUrl: String, onClick: () -> Unit) {
     Row(horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.height(117.dp).width(336.dp)
-            .clip(RoundedCornerShape(16.dp))
-            .background(BackgroundGray)) {
-        Column(modifier = Modifier.padding(start = 31.dp)) {
+        modifier = Modifier.fillMaxWidth()
+            .background(BackgroundGray, shape = RoundedCornerShape(16.dp))
+            .clickable(enabled = true, interactionSource = null, indication = null) { onClick() }) {
+        Column(modifier = Modifier.fillMaxWidth(0.75f).padding(start = 31.dp, top = 16.dp, bottom = 16.dp)) {
             Text(text = cityName,
                 fontFamily = PoppinsFontFamily, fontSize = 20.sp, fontWeight = FontWeight.SemiBold, color = CustomBlack
             )
             Text(text = temp,
                 fontFamily = PoppinsFontFamily, fontSize = 60.sp, fontWeight = FontWeight.Medium, color = CustomBlack
             )
-
         }
 
-        GlideSubcomposition(modifier = Modifier.size(123.dp),
-            model = "https:$imageUrl"
+        GlideSubcomposition(modifier = Modifier.size(128.dp).padding(end = 32.dp)
+            .align(Alignment.CenterVertically),
+            model = "https:" + imageUrl.replace("64x64", "128x128")
         ) {
             when (state) {
                 RequestState.Loading -> CircularProgressIndicator(
@@ -62,5 +66,6 @@ fun SearchResultCard(cityName: String, temp: String, imageUrl: String) {
                     modifier = Modifier.size(85.dp),
                     contentDescription = "Weather Icon Image")
             }
-        }    }
+        }
+    }
 }

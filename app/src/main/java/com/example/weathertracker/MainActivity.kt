@@ -47,7 +47,7 @@ import com.example.network.RetrofitClient
 import com.example.network.data.WeatherInfo
 import com.example.weathertracker.composeutil.LocationWeatherDetails
 import com.example.weathertracker.composeutil.NoCitySelected
-import com.example.weathertracker.composeutil.SearchCity
+import com.example.weathertracker.composeutil.SearchBox
 import com.example.weathertracker.ui.theme.BackgroundGray
 import com.example.weathertracker.ui.theme.CustomBlack
 import com.example.weathertracker.ui.theme.LightGray
@@ -75,14 +75,14 @@ class MainActivity : ComponentActivity() {
                     Column(modifier = Modifier.padding(innerPadding).fillMaxSize(),
                         horizontalAlignment = Alignment.CenterHorizontally) {
                         Spacer(Modifier.height(44.dp))
-                        SearchCity()
-                        if (WeatherApp.getStoredCityName().isEmpty()) {
-                            Spacer(Modifier.height(240.dp))
-                            NoCitySelected()
-                        } else {
-                            Spacer(Modifier.height(80.dp))
-                            LocationWeatherDetails("Surat")
-                        }
+                        SearchBox()
+//                        if (WeatherApp.getStoredCityName().isEmpty()) {
+//                            Spacer(Modifier.height(240.dp))
+//                            NoCitySelected()
+//                        } else {
+//                            Spacer(Modifier.height(80.dp))
+//                            LocationWeatherDetails("Surat")
+//                        }
                     }
                 }
             }
