@@ -46,7 +46,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import com.example.weathertracker.WeatherApp
-import com.example.weathertracker.tempOnTextChange
 import com.example.weathertracker.ui.theme.BackgroundGray
 import com.example.weathertracker.ui.theme.CustomGray
 import com.example.weathertracker.ui.theme.IconGray

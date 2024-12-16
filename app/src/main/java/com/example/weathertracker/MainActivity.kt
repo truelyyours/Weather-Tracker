@@ -42,6 +42,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.network.ApiService
 import com.example.network.RetrofitClient
 import com.example.network.data.WeatherInfo
@@ -53,6 +54,8 @@ import com.example.weathertracker.ui.theme.CustomBlack
 import com.example.weathertracker.ui.theme.LightGray
 import com.example.weathertracker.ui.theme.PoppinsFontFamily
 import com.example.weathertracker.ui.theme.WeatherTrackerTheme
+import com.example.weathertracker.viewmodel.SearchBoxViewModel
+import com.example.weathertracker.viewmodel.WeatherInfoViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -69,13 +72,14 @@ class MainActivity : ComponentActivity() {
         setContent {
             WeatherTrackerTheme {
 
-//                val viewModel = DataViewModel()
+                val searchBoxViewModel: SearchBoxViewModel = hiltViewModel()
+                val weatherInfoViewModel: WeatherInfoViewModel = hiltViewModel()
 
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Column(modifier = Modifier.padding(innerPadding).fillMaxSize(),
                         horizontalAlignment = Alignment.CenterHorizontally) {
                         Spacer(Modifier.height(44.dp))
-                        SearchBox()
+                        SearchBox(searchBoxViewModel)
 //                        if (WeatherApp.getStoredCityName().isEmpty()) {
 //                            Spacer(Modifier.height(240.dp))
 //                            NoCitySelected()
@@ -88,8 +92,4 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-}
-
-fun tempOnTextChange(text: String): String {
-    return "hello __ $text"
 }

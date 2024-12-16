@@ -35,8 +35,8 @@ class SearchBoxViewModel @Inject constructor(
     }
 
     sealed interface ScreenState {
-        object Empty: ScreenState
-        object Searching: ScreenState
+        data object Empty: ScreenState
+        data object Searching: ScreenState
         data class Error(val message: String): ScreenState
         data class Response(val weatherInfo: WeatherInfo): ScreenState
     }

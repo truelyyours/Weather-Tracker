@@ -50,27 +50,10 @@ class WeatherInfoViewModel @Inject constructor(
             }
         }
     }
-
-    private val _isSearching = MutableStateFlow(false)
-    val isSearching = _isSearching.asStateFlow() // only readable by outside users
-
-    private val _searchText = MutableStateFlow("")
-    val searchText = _searchText.asStateFlow()
-
-    fun onSearchTextChange(text: String) {
-//        TODO: network call to fetch the region
-    }
-
-    fun onToggleSearch() {
-        _isSearching.value = !_isSearching.value
-        if (!_isSearching.value)
-            _searchText.value = ""
-    }
-
 }
 
 sealed interface WeatherInfoLoadingState {
-    object Loading: WeatherInfoLoadingState
+    data object Loading: WeatherInfoLoadingState
     data class Error(val message: String): WeatherInfoLoadingState
     data class Success(val weatherInfo: WeatherInfo): WeatherInfoLoadingState
 }
