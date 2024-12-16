@@ -42,6 +42,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.network.ApiService
 import com.example.network.RetrofitClient
 import com.example.network.data.WeatherInfo
 import com.example.weathertracker.composeutil.LocationWeatherDetails
@@ -52,18 +53,15 @@ import com.example.weathertracker.ui.theme.CustomBlack
 import com.example.weathertracker.ui.theme.LightGray
 import com.example.weathertracker.ui.theme.PoppinsFontFamily
 import com.example.weathertracker.ui.theme.WeatherTrackerTheme
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
-
-
-
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
 //    Init Retrofit Client
-    init {
-        RetrofitClient.createInstance(WeatherApp.getNonUiAppContext().getString(R.string.base_url))
-    }
-
-    private val apiClient = RetrofitClient.getApiClient()
+    @Inject
+    lateinit var retrofitClient: RetrofitClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,7 +79,7 @@ class MainActivity : ComponentActivity() {
 //                        Spacer(Modifier.height(240.dp))
 //                        NoCitySelected()
                         Spacer(Modifier.height(80.dp))
-                        LocationWeatherDetails()
+                        LocationWeatherDetails(retrofitClient)
                     }
                 }
             }

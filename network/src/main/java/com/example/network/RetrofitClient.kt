@@ -12,7 +12,7 @@ import retrofit2.HttpException
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-object RetrofitClient {
+class RetrofitClient {
     private lateinit var BASE_URL: String
 //    lateinit var client: RetrofitClient
     private lateinit var retrofit: Retrofit

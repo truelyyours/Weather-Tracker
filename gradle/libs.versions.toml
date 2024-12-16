@@ -1,8 +1,8 @@
 [versions]
 agp = "8.7.3"
 compose = "1.0.0-beta01"
-hiltAndroid = "2.49"
-hiltAndroidCompiler = "2.44"
+hiltAndroid = "2.51.1"
+hiltAndroidCompiler = "2.51.1"
 hiltNavigationCompose = "1.2.0"
 kotlin = "2.0.0"
 coreKtx = "1.15.0"
@@ -20,6 +20,7 @@ material = "1.12.0"
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
+androidx-hilt-navigation-fragment = { module = "androidx.hilt:hilt-navigation-fragment", version.ref = "hiltNavigationCompose" }
 compose = { module = "com.github.bumptech.glide:compose", version.ref = "compose" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }

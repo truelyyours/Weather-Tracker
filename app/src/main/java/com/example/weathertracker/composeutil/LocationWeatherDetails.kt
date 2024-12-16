@@ -34,6 +34,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.Placeholder
 import androidx.compose.ui.text.PlaceholderVerticalAlign
+import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -59,7 +60,7 @@ import kotlinx.coroutines.Dispatchers
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun LocationWeatherDetails() {
+fun LocationWeatherDetails(retrofitClient: RetrofitClient) {
 
     var weatherInfo by remember {
         mutableStateOf<WeatherInfo?> (null)
@@ -72,7 +73,7 @@ fun LocationWeatherDetails() {
     }
 
     LaunchedEffect(Unit) {
-        RetrofitClient.getCurrentWeather(Dispatchers.IO, Utils.getWeatherAppApiKey(), "S").onSuccess {
+        retrofitClient.getCurrentWeather(Dispatchers.IO, Utils.getWeatherAppApiKey(), "Surat").onSuccess {
             weatherInfo = it
         }.onGenericError{code, error ->
 //            This means location not found.
@@ -80,7 +81,7 @@ fun LocationWeatherDetails() {
             locationError = true
             Log.e("LocationWeatherDetails::", "Generic Error $code && $error")
         }.onFailure {
-//            TODO: Show empty. DO nothing This mean NO INTERNET
+//            This mean NO INTERNET
             networkError = true
             locationError = false
             Log.e("LocationWeatherDetails:: ", it.message.toString())
@@ -165,7 +166,10 @@ fun LocationText(name: String) {
     )
 
     Text(text = textt, inlineContent = inlineContent,
-        fontFamily = PoppinsFontFamily, fontSize = 30.sp, fontWeight = FontWeight.SemiBold, color = CustomBlack)
+        fontFamily = PoppinsFontFamily, style = TextStyle(fontSize = 40.sp,
+            platformStyle = PlatformTextStyle(includeFontPadding = false)
+        ),
+        fontWeight = FontWeight.SemiBold, color = CustomBlack)
 
 }
 
