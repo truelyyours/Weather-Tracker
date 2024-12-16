@@ -21,14 +21,19 @@ class WeatherInfoViewModel @Inject constructor(
     )
     val stateFlow = _internalState.asStateFlow() // External can read only from this
 
-
+    private var cachedInfo: WeatherInfo? = null
 
     fun getWeather(location: String) = viewModelScope.launch {
+        if (cachedInfo != null && cachedInfo!!.location.name == location) {
+//            _internalState.update {  }
+            return@launch
+        }
         _internalState.update {
             return@update WeatherInfoLoadingState.Loading
         }
         currentWeatherRepository.fetchWeather(location).onSuccess { info ->
             _internalState.update {
+                cachedInfo = info
                 return@update WeatherInfoLoadingState.Success(
                     weatherInfo = info
                 )
